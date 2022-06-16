@@ -2,9 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_authentication/pages/home.dart';
 import 'package:flutter_authentication/utils/AllStyles.dart';
 import 'package:flutter_authentication/utils/authentication.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_authentication/utils/AppRoutes.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -58,8 +60,10 @@ class _LoginState extends State<Login> {
           loading = true;
           try {
             FirebaseService().signInwithGoogle();
+            Navigator.pushNamed(context, Approutes.HomeRoute);
           } catch (e) {
             print(e);
+            Navigator.pushNamed(context, Approutes.LoginRoute);
           }
           loading = false;
         });

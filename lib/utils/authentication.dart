@@ -14,7 +14,9 @@ class FirebaseService {
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
+      print("Done signing to google ");
       await _auth.signInWithCredential(credential);
+      print("Done signing to firebase ");
     } on FirebaseAuthException catch (e) {
       print(e.message);
       throw e;
@@ -26,5 +28,15 @@ class FirebaseService {
     final GoogleSignIn _googleSignIn = GoogleSignIn();
     await _googleSignIn.signOut();
     await _auth.signOut();
+  }
+
+  Future<bool> getAuthResult() async {
+    if (FirebaseAuth.instance.currentUser?.uid == null) {
+// not logged
+      return false;
+    } else {
+// logged
+      return true;
+    }
   }
 }
