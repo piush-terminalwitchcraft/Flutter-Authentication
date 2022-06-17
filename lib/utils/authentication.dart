@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseService {
-  Future<String?> signInwithGoogle() async {
+  Future<String?> signInwithGoogle(var context) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final GoogleSignIn _googleSignIn = GoogleSignIn();
     try {
@@ -30,7 +30,9 @@ class FirebaseService {
     await _auth.signOut();
   }
 
-  Future<bool> getAuthResult() async {
+  Future<bool> isUserLoggedin() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
     if (FirebaseAuth.instance.currentUser?.uid == null) {
 // not logged
       return false;

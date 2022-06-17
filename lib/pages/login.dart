@@ -59,8 +59,10 @@ class _LoginState extends State<Login> {
         setState(() {
           loading = true;
           try {
-            FirebaseService().signInwithGoogle();
-            Navigator.pushNamed(context, Approutes.HomeRoute);
+            FirebaseService().signInwithGoogle(context).then((value) => {
+                  print("Successfully logged in"),
+                  Navigator.pushNamed(context, Approutes.HomeRoute),
+                });
           } catch (e) {
             print(e);
             Navigator.pushNamed(context, Approutes.LoginRoute);

@@ -15,7 +15,17 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(),
+      body: FutureBuilder<bool>(
+        future: FirebaseService().isUserLoggedin(),
+        builder: (context, snapshot) {
+          Widget children;
+          if (snapshot.hasData) {
+            children = Text(snapshot.data.toString());
+          } else
+            children = Text(snapshot.error.toString());
+          return children;
+        },
+      ),
     );
   }
 }
