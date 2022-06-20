@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_authentication/pages/home.dart';
 import 'package:flutter_authentication/utils/AllStyles.dart';
 import 'package:flutter_authentication/utils/authentication.dart';
@@ -202,10 +203,18 @@ class _LoginState extends State<Login> {
                             "Don't have an account?  ",
                             style: AllStyles().DefaultStyle(),
                           ),
-                          Text(
-                            "Register Here",
-                            style: AllStyles()
-                                .DefaultStyleWithColor(Colors.deepOrange),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                Navigator.pushNamed(
+                                    context, Approutes.RegisterRoute);
+                              });
+                            },
+                            child: Text(
+                              "Register Here",
+                              style: AllStyles()
+                                  .DefaultStyleWithColor(Colors.deepOrange),
+                            ),
                           )
                         ]),
                   ),

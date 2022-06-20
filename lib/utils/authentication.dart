@@ -41,4 +41,23 @@ class FirebaseService {
       return true;
     }
   }
+
+  Future<void> signInWithDefaultMethod(String email, String password,
+      String Displayname, String photoURL) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    await _auth
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((UserCredential) {
+      try {
+        _auth
+            .signInWithCredential(UserCredential.credential!)
+            .then((UserCredential) async {
+          await UserCredential.user!.updatePhotoURL(photoURL);
+          await UserCredential.user!.updateDisplayName(Displayname);
+        });
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
 }
