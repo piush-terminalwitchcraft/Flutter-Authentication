@@ -1,10 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.flutter_authentication">
+    <uses-permission android:name="android.permission.CAMERA" />
    <application
         android:label="flutter_authentication"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-    <uses-permission android:name="android.permission.CAMERA" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

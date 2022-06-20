@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_authentication/utils/FirebaseStorage.dart';
 import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:typed_data';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -20,22 +22,38 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  XFile? imageFile = null;
+  File? imageFile;
+  Uint8List webImage = Uint8List(10);
   String email = "";
   String username = "";
   String password = "";
   var auth = FirebaseService();
 
-  Future imageSelector(BuildContext context, String pickerType) async {
-    switch (pickerType) {
-      case "gallery":
-        imageFile = await ImagePicker().pickImage(
-            source: ImageSource.gallery, maxHeight: 200, maxWidth: 200);
-        break;
-      case "camera":
-        imageFile = await ImagePicker().pickImage(
-            source: ImageSource.camera, maxHeight: 200, maxWidth: 200);
-        break;
+  Future<PermissionStatus> requestPermissions() async {
+    await Permission.photos.request();
+    return Permission.photos.status;
+  }
+
+  Future imageSelector(BuildContext context) async {
+    var permissionStatus = requestPermissions();
+    if (!kIsWeb && await permissionStatus.isGranted) {
+      final picker = ImagePicker();
+      final pickedfile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedfile == null) return;
+      final file = File(pickedfile.path);
+      setState(() async {
+        imageFile = file;
+      });
+    } else if (kIsWeb) {
+      final ImagePicker _picker = ImagePicker();
+      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        var f = await image.readAsBytes();
+        setState(() {
+          imageFile = File("a");
+          webImage = f;
+        });
+      }
     }
   }
 
@@ -68,13 +86,16 @@ class _RegisterState extends State<Register> {
                     InkWell(
                       onTap: () {
                         print("tapped");
+                        setState(() async {
+                          await imageSelector(context);
+                        });
                       },
                       child: CircleAvatar(
                         radius: 50,
                         backgroundImage: (imageFile == null)
                             ? Image.asset("assets/images/profile_image.jpg")
                                 .image
-                            : FileImage(File(imageFile!.path)),
+                            : getProfileImg(),
                       ),
                     ),
                     _EmptyContainer(20),
@@ -143,18 +164,25 @@ class _RegisterState extends State<Register> {
                         print(username);
                         print(password);
 
-                        setState(() {
-                          auth.handleSignUp(email, password).then((user) {
+                        setState(() async {
+                          await auth
+                              .handleSignUp(email, password)
+                              .then((user) async {
                             print(user);
                             if (!username.isEmpty) {
-                              auth.UpdateUsername(username)
+                              await auth.UpdateUsername(username)
                                   .catchError((e) => print(e));
                             }
                             if (imageFile != null) {
-                              auth.UpdateProfilePic(imageFile!.path.toString());
+                              await getDownloadURL(user!.uid!)
+                                  .then((value) async {
+                                print(value);
+                                await auth.UpdateProfilePic(value)
+                                    .catchError((e) => print(e));
+                              }).catchError((e) => print(e));
                             }
                           }).catchError((e) => print(e));
-                          Navigator.pushNamed(context, Approutes.HomeRoute);
+                          Navigator.pushNamed(context, Approutes.LoginRoute);
                         });
                       },
                       child: Text("Register"),
@@ -208,5 +236,19 @@ class _RegisterState extends State<Register> {
 
   getImage() {
     return null;
+  }
+
+  ImageProvider<Object> getProfileImg() {
+    return (kIsWeb)
+        ? Image.memory(webImage).image
+        : Image.file(imageFile!).image;
+  }
+
+  Future<String> getDownloadURL(String uid) async {
+    if (kIsWeb) {
+      return await StorageService().uploadPicWeb(webImage, uid);
+    } else {
+      return await StorageService().uploadPic(imageFile!, uid);
+    }
   }
 }

@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.light,
       routes: {
-        "/": (context) => Home(),
+        "/": (context) => Login(),
         Approutes.HomeRoute: (context) => Home(),
         Approutes.LoginRoute: (context) => Login(),
         Approutes.RegisterRoute: (context) => Register(),

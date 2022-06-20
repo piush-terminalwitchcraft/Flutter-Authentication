@@ -1,6 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_authentication/utils/AllStyles.dart';
+import 'package:flutter_authentication/utils/AppRoutes.dart';
 import 'package:flutter_authentication/utils/authentication.dart';
 
 class Home extends StatefulWidget {
@@ -12,6 +16,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool chkUserLogged = false;
+  final auth = FirebaseService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +60,7 @@ class _HomeState extends State<Home> {
   Widget _Body(int a, int b, int c) {
     return Column(
       children: [
-        _EmptyContainer(20),
+        _EmptyContainer(60),
         Row(
           children: [
             Expanded(
@@ -67,8 +72,26 @@ class _HomeState extends State<Home> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FirebaseService().getProfileImg(),
-                  Text(FirebaseService().getUserName()),
+                  auth.getProfileImg(),
+                  _EmptyContainer(20),
+                  Text(
+                    auth.getUserName(),
+                    style: AllStyles().DefaultStyleWithColor(Colors.deepOrange),
+                  ),
+                  _EmptyContainer(20),
+                  Text(
+                    auth.getEmail()!,
+                    style: AllStyles().DefaultStyle(),
+                  ),
+                  _EmptyContainer(20),
+                  ElevatedButton(
+                    onPressed: () {
+                      auth.signOutFromGoogle().then((value) {
+                        Navigator.pushNamed(context, Approutes.LoginRoute);
+                      });
+                    },
+                    child: Text("Sign out"),
+                  )
                 ],
               ),
             ),

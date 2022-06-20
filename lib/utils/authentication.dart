@@ -7,6 +7,10 @@ class FirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  String? getEmail() {
+    return _auth.currentUser!.email;
+  }
+
   Future<String?> signInwithGoogle(var context) async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
@@ -41,6 +45,7 @@ class FirebaseService {
 
   Widget getProfileImg() {
     if (_auth.currentUser?.photoURL != null) {
+      print(_auth.currentUser!.photoURL);
       return CircleAvatar(
           radius: 50,
           backgroundImage: Image.network(_auth.currentUser!.photoURL!).image);
@@ -75,11 +80,15 @@ class FirebaseService {
     return user;
   }
 
+  Future<User> getCurrentUser() {
+    return handleSignInEmail(_auth.currentUser!.email!, "1234567890");
+  }
+
   Future<void> UpdateUsername(String username) async {
-    _auth.currentUser!.updateDisplayName(username);
+    await _auth.currentUser!.updateDisplayName(username);
   }
 
   Future<void> UpdateProfilePic(String photoURL) async {
-    _auth.currentUser!.updatePhotoURL(photoURL);
+    await _auth.currentUser!.updatePhotoURL(photoURL);
   }
 }
