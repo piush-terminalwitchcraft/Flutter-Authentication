@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_authentication/utils/AppRoutes.dart';
 import 'package:flutter_authentication/utils/authentication.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/rendering.dart';
@@ -20,29 +24,18 @@ class _RegisterState extends State<Register> {
   String email = "";
   String username = "";
   String password = "";
+  var auth = FirebaseService();
 
   Future imageSelector(BuildContext context, String pickerType) async {
     switch (pickerType) {
       case "gallery":
-
-        /// GALLERY IMAGE PICKER
-        imageFile = await ImagePicker()
-            .pickImage(source: ImageSource.gallery, imageQuality: 90);
+        imageFile = await ImagePicker().pickImage(
+            source: ImageSource.gallery, maxHeight: 200, maxWidth: 200);
         break;
-
-      case "camera": // CAMERA CAPTURE CODE
-        imageFile = await ImagePicker()
-            .pickImage(source: ImageSource.camera, imageQuality: 90);
+      case "camera":
+        imageFile = await ImagePicker().pickImage(
+            source: ImageSource.camera, maxHeight: 200, maxWidth: 200);
         break;
-    }
-
-    if (imageFile != null) {
-      print("You selected  image : " + imageFile!.path);
-      setState(() {
-        debugPrint("SELECTED IMAGE PICK   $imageFile");
-      });
-    } else {
-      print("You have not taken image");
     }
   }
 
@@ -72,31 +65,16 @@ class _RegisterState extends State<Register> {
                       style: AllStyles().DefaultStyle(),
                     ),
                     _EmptyContainer(20),
-                    Container(
-                      width: 100,
-                      height: 100,
-                      margin: EdgeInsets.only(top: 20),
-                      child: InkWell(
-                        onTap: () {
-                          print("Tapped");
-                          setState(() {
-                            imageSelector(context, "camera")
-                                .then((value) => {});
-                          });
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: (imageFile == null)
-                              ? Image.asset('assets/images/profile_image.jpg')
-                                  .image
-                              :
-                              // : FileImage(imageFile).file,
-                              FileImage(File(imageFile!.path)),
-                          fit: BoxFit.cover,
-                        ),
+                    InkWell(
+                      onTap: () {
+                        print("tapped");
+                      },
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: (imageFile == null)
+                            ? Image.asset("assets/images/profile_image.jpg")
+                                .image
+                            : FileImage(File(imageFile!.path)),
                       ),
                     ),
                     _EmptyContainer(20),
@@ -106,7 +84,7 @@ class _RegisterState extends State<Register> {
                           username = text;
                         });
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.orangeAccent, width: 2.0),
@@ -166,8 +144,17 @@ class _RegisterState extends State<Register> {
                         print(password);
 
                         setState(() {
-                          FirebaseService().signInWithDefaultMethod(
-                              email, username, password, "");
+                          auth.handleSignUp(email, password).then((user) {
+                            print(user);
+                            if (!username.isEmpty) {
+                              auth.UpdateUsername(username)
+                                  .catchError((e) => print(e));
+                            }
+                            if (imageFile != null) {
+                              auth.UpdateProfilePic(imageFile!.path.toString());
+                            }
+                          }).catchError((e) => print(e));
+                          Navigator.pushNamed(context, Approutes.HomeRoute);
                         });
                       },
                       child: Text("Register"),
@@ -175,9 +162,15 @@ class _RegisterState extends State<Register> {
                     _EmptyContainer(30),
                     Container(
                       alignment: Alignment.centerRight,
-                      child: Text(
-                        "Forgot Password?",
-                        style: AllStyles().DefaultStyle(),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, Approutes.LoginRoute);
+                        },
+                        child: Text(
+                          "Registered? Log in here ",
+                          style: AllStyles()
+                              .DefaultStyleWithColor(Colors.deepOrange),
+                        ),
                       ),
                     ),
                     _EmptyContainer(10),

@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_authentication/pages/home.dart';
 import 'package:flutter_authentication/utils/AllStyles.dart';
 import 'package:flutter_authentication/utils/authentication.dart';
+import 'package:flutter_authentication/utils/otherServices.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_authentication/utils/AppRoutes.dart';
 
@@ -17,6 +18,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  String email = "";
+  String password = "";
   bool loading = false;
   Widget _divider(String txt) {
     return Container(
@@ -129,8 +132,8 @@ class _LoginState extends State<Login> {
                       style: AllStyles().DefaultStyle(),
                     ),
                     _EmptyContainer(20),
-                    const TextField(
-                      decoration: InputDecoration(
+                    TextField(
+                      decoration: const InputDecoration(
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.orangeAccent, width: 2.0),
@@ -141,10 +144,17 @@ class _LoginState extends State<Login> {
                         ),
                         hintText: 'Enter the email ID',
                       ),
+                      onChanged: (text) {
+                        setState(() {
+                          email = text;
+                          print(email);
+                          print(password);
+                        });
+                      },
                     ),
                     _EmptyContainer(20),
-                    const TextField(
-                      decoration: InputDecoration(
+                    TextField(
+                      decoration: const InputDecoration(
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.orangeAccent, width: 2.0),
@@ -155,12 +165,24 @@ class _LoginState extends State<Login> {
                         ),
                         hintText: 'Enter the password',
                       ),
+                      onChanged: (text) {
+                        setState(() {
+                          print(email);
+                          print(password);
+                          password = text;
+                        });
+                      },
                     ),
                     _EmptyContainer(20),
                     ElevatedButton(
                       style: AllStyles().DefaultButtonStyle(Colors.deepOrange),
                       onPressed: () {
-                        print("Clicked");
+                        FirebaseService()
+                            .handleSignInEmail(email, password)
+                            .then((value) {
+                          print(value);
+                          Navigator.pushNamed(context, Approutes.HomeRoute);
+                        }).catchError((e) => print(e));
                       },
                       child: Text("Login"),
                     ),

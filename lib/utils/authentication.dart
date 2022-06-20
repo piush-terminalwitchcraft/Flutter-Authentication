@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   Future<String?> signInwithGoogle(var context) async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
@@ -24,40 +27,59 @@ class FirebaseService {
   }
 
   Future<void> signOutFromGoogle() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
     await _googleSignIn.signOut();
     await _auth.signOut();
   }
 
   Future<bool> isUserLoggedin() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
     if (FirebaseAuth.instance.currentUser?.uid == null) {
-// not logged
       return false;
     } else {
-// logged
       return true;
     }
   }
 
-  Future<void> signInWithDefaultMethod(String email, String password,
-      String Displayname, String photoURL) async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    await _auth
-        .createUserWithEmailAndPassword(email: email, password: password)
-        .then((UserCredential) {
-      try {
-        _auth
-            .signInWithCredential(UserCredential.credential!)
-            .then((UserCredential) async {
-          await UserCredential.user!.updatePhotoURL(photoURL);
-          await UserCredential.user!.updateDisplayName(Displayname);
-        });
-      } catch (e) {
-        print(e);
-      }
-    });
+  Widget getProfileImg() {
+    if (_auth.currentUser?.photoURL != null) {
+      return CircleAvatar(
+          radius: 50,
+          backgroundImage: Image.network(_auth.currentUser!.photoURL!).image);
+    } else {
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: Image.asset(
+          'assets/images/profile_image.jpg',
+        ).image,
+      );
+    }
+  }
+
+  String getUserName() {
+    if (_auth.currentUser?.displayName != null)
+      return _auth.currentUser!.displayName!;
+    else
+      return "User 1234";
+  }
+
+  Future<User> handleSignInEmail(String email, String password) async {
+    UserCredential result = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    final User user = result.user!;
+    return user;
+  }
+
+  Future<User> handleSignUp(email, password) async {
+    UserCredential result = await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    final User user = result.user!;
+    return user;
+  }
+
+  Future<void> UpdateUsername(String username) async {
+    _auth.currentUser!.updateDisplayName(username);
+  }
+
+  Future<void> UpdateProfilePic(String photoURL) async {
+    _auth.currentUser!.updatePhotoURL(photoURL);
   }
 }
