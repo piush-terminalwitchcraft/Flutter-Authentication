@@ -1,7 +1,7 @@
 # flutter authentication using firebase
 
 A flutter project with simple and user friendly UI of implementing simple login and registration page using both google as well as firebase default email - password authentication
-Also used various libraries forimage picker
+Also used various libraries for image picker, image compression, handled various tasks with the concept of multithreading and almost null safety environment.
 
 ## Currently Stable on Web 
 
