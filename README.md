@@ -5,6 +5,8 @@ Also used various libraries for image picker, image compression, handled various
 
 ## Currently Stable on Web 
 
+To run flutter web app run the command on terminal - 
+```flutter run -d chrome --web-hostname localhost --web-port 5000```
 ### Login Screen 
 ![image](https://user-images.githubusercontent.com/76522725/174657110-ef016bb7-4847-46ee-9e66-133dabb211b8.png)
 
