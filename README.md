@@ -1,16 +1,28 @@
-# flutter_authentication
+# flutter authentication using firebase
 
-A new Flutter project.
+A flutter project with simple and user friendly UI of implementing simple login and registration page using both google as well as firebase default email - password authentication
+Also used various libraries forimage picker
 
-## Getting Started
+## Currently Stable on Web 
 
-This project is a starting point for a Flutter application.
+### Login Screen 
+![image](https://user-images.githubusercontent.com/76522725/174657110-ef016bb7-4847-46ee-9e66-133dabb211b8.png)
 
-A few resources to get you started if this is your first Flutter project:
+### Registration Screen 
+![image](https://user-images.githubusercontent.com/76522725/174657295-8a5c2273-92a4-449d-aa4c-62332a92dd22.png)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Home Screen 
+![image](https://user-images.githubusercontent.com/76522725/174657393-4eda5ef8-1443-4380-bf10-7f3c20733da8.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+### Responsive as well
+<img src="https://user-images.githubusercontent.com/76522725/174657571-3b13eed3-a8f6-4cc2-af7c-10191b7c9116.png" width="500"  />
+![image](https://user-images.githubusercontent.com/76522725/174657571-3b13eed3-a8f6-4cc2-af7c-10191b7c9116.png)
+
+## Stable on Android version as well 
+- google sign in is stable 
+- Some issues are still remaining on picture rendering 
+
+## IOS - Not tested
+
+
